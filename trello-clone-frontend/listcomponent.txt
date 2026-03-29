@@ -1,0 +1,215 @@
+const ListComponent = ({
+  list,
+  index,
+  onCardClick,
+  addingCardToListId,
+  setAddingCardToListId,
+  newCardTitle,
+  setNewCardTitle,
+  handleAddCard,
+  activeListMenuId,
+  setActiveListMenuId,
+  handleDeleteList
+}: {
+  list: List;
+  index: number;
+  onCardClick: (card: Card) => void;
+  addingCardToListId: string | null;
+  setAddingCardToListId: (id: string | null) => void;
+  newCardTitle: string;
+  setNewCardTitle: (title: string) => void;
+  handleAddCard: (listId: string) => void;
+  activeListMenuId: string | null;
+  setActiveListMenuId: (id: string | null) => void;
+  handleDeleteList: (id: string) => void;
+}) => {
+  return (
+    <Draggable draggableId={list.id} index={index}>
+      {(provided) => {
+        const listColors = ['#A78BFA', '#F59E0B', '#38B2F8', '#22D3A0'];
+        const dotColor = listColors[index % listColors.length];
+        return (
+          <div
+            ref={provided.innerRef}
+            {...provided.draggableProps}
+            {...provided.dragHandleProps}
+            style={{ width: '280px', flexShrink: 0, background: 'var(--glass)', backdropFilter: 'blur(12px)', border: '1px solid var(--border)', borderRadius: 'var(--radius-xl)', display: 'flex', flexDirection: 'column', height: 'fit-content', maxHeight: '100%', transition: 'border-color 0.2s, background 0.2s', ...provided.draggableProps.style }}
+            onDragOver={(e) => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.background = 'var(--accent-dim)'; }}
+            onDragLeave={(e) => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = 'var(--glass)'; }}
+            onDrop={(e) => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = 'var(--glass)'; }}
+          >
+            <div style={{ padding: '14px 14px 10px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: dotColor }}></div>
+                <input
+                  id={`list-header-input-${list.id}`}
+                  style={{ fontFamily: 'var(--font-display)', fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-secondary)', background: 'transparent', border: 'none', outline: 'none', width: '130px' }}
+                  defaultValue={list.title}
+                />
+                <span style={{ fontSize: '10px', background: 'var(--surface-3)', border: '1px solid var(--border)', color: 'var(--text-muted)', borderRadius: '20px', padding: '1px 7px' }}>
+                  {list.cards?.length || 0}
+                </span>
+              </div>
+              <div style={{ position: 'relative' }}>
+                <button
+                  onClick={() => setActiveListMenuId(activeListMenuId === list.id ? null : list.id)}
+                  style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '4px', cursor: 'pointer' }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = 'var(--surface-2)'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
+                >
+                  <MoreHorizontal size={16} />
+                </button>
+                {activeListMenuId === list.id && (
+                  <div style={{ position: 'absolute', left: 'auto', right: 0, top: '28px', width: '200px', background: 'var(--surface-2)', border: '1px solid var(--border-strong)', borderRadius: 'var(--radius-md)', zIndex: 50, padding: '8px 0', boxShadow: '0 8px 24px rgba(0,0,0,0.5)' }}>
+                    <div style={{ padding: '0 16px 8px', borderBottom: '1px solid var(--border)', fontSize: '12px', fontWeight: 600, color: 'var(--text-muted)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                      List Actions
+                      <button onClick={() => setActiveListMenuId(null)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}><X size={14} /></button>
+                    </div>
+                    <button style={{ width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: '13px', color: 'var(--text-primary)', background: 'none', border: 'none', cursor: 'pointer' }} onMouseEnter={(e) => e.currentTarget.style.background = 'var(--surface-3)'} onMouseLeave={(e) => e.currentTarget.style.background = 'none'} onClick={() => { document.getElementById(`list-header-input-${list.id}`)?.focus(); setActiveListMenuId(null); }}>Rename list</button>
+                    <button style={{ width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: '13px', color: 'var(--text-primary)', background: 'none', border: 'none', cursor: 'pointer' }} onMouseEnter={(e) => e.currentTarget.style.background = 'var(--surface-3)'} onMouseLeave={(e) => e.currentTarget.style.background = 'none'} onClick={() => { setAddingCardToListId(list.id); setActiveListMenuId(null); }}>Add card...</button>
+                    <div style={{ height: '1px', background: 'var(--border)', margin: '4px 0' }}></div>
+                    <button style={{ width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: '13px', color: 'var(--priority-red)', background: 'none', border: 'none', cursor: 'pointer' }} onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,77,109,0.1)'} onMouseLeave={(e) => e.currentTarget.style.background = 'none'} onClick={() => { handleDeleteList(list.id); setActiveListMenuId(null); }}>Delete list</button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <Droppable droppableId={list.id} type="card">
+              {(provided) => (
+                <div
+                  ref={provided.innerRef}
+                  {...provided.droppableProps}
+                  style={{ display: 'flex', flexDirection: 'column', gap: '8px', minHeight: '2px', padding: '10px 10px 0' }}
+                >
+                  {list.cards?.map((card, cardIndex) => (
+                    <Draggable key={card.id} draggableId={card.id} index={cardIndex}>
+                      {(provided) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          onClick={() => onCardClick(card)}
+                          style={{ ...provided.draggableProps.style, background: 'var(--surface-1)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: '12px 12px 12px 20px', cursor: 'grab', position: 'relative', overflow: 'hidden', minHeight: '40px' }}
+                          onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--surface-1)'; e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.boxShadow = 'none'; }}
+                          onMouseDown={(e) => { e.currentTarget.style.cursor = 'grabbing'; }}
+                          onMouseUp={(e) => { e.currentTarget.style.cursor = 'grab'; }}
+                        >
+                          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(255,255,255,0.02) 0%, transparent 100%)', pointerEvents: 'none' }}></div>
+                          {(() => {
+                             const pColor = card.labels && card.labels.length > 0 ? card.labels[0].color : 'transparent';
+                             const colorMap: any = { '#ef4444': 'var(--priority-red)', '#f97316': 'var(--priority-amber)', '#3b82f6': 'var(--priority-blue)', '#22c55e': 'var(--priority-green)', '#8b5cf6': 'var(--priority-purple)' };
+                             const stripeColor = colorMap[pColor] || (pColor !== 'transparent' ? pColor : 'transparent');
+                             return <div style={{ position: 'absolute', left: 0, top: '10px', bottom: '10px', width: '2.5px', borderRadius: '0 2px 2px 0', backgroundColor: stripeColor }}></div>;
+                          })()}
+
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1, minWidth: 0, position: 'relative', zIndex: 1 }}>
+                            <span style={{ fontSize: '13px', fontWeight: 500, color: 'var(--text-primary)', lineHeight: 1.45, wordBreak: 'break-word' }}>{card.title}</span>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                              <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '8px' }}>
+                                {card.dueDate && (() => {
+                                    return (
+                                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '10px', fontWeight: 500, color: 'var(--text-muted)', background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: '6px', padding: '2px 6px', width: 'fit-content' }}>
+                                        <Calendar size={9} />
+                                        <span>{formatDueDate(card.dueDate)}</span>
+                                      </div>
+                                    );
+                                })()}
+                                {card.description && (
+                                  <div style={{ color: 'var(--text-muted)', display: 'flex', alignItems: 'center' }}>
+                                    <AlignLeft size={14} />
+                                  </div>
+                                )}
+                                {card.checklists && card.checklists.length > 0 && (() => {
+                                    const completed = card.checklists.filter(i => i.isCompleted).length;
+                                    const total = card.checklists.length;
+                                    const isAllDone = completed === total && total > 0;
+                                    return (
+                                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '10px', fontWeight: 500, color: isAllDone ? 'var(--priority-green)' : 'var(--text-muted)', background: isAllDone ? 'rgba(34,211,160,0.08)' : 'var(--surface-2)', border: isAllDone ? '1px solid rgba(34,211,160,0.2)' : '1px solid var(--border)', borderRadius: '6px', padding: '2px 6px', width: 'fit-content' }}>
+                                        <CheckCircle2 size={9} />
+                                        <span>{completed}/{total}</span>
+                                      </div>
+                                    );
+                                })()}
+                              </div>
+
+                              {card.assignees && card.assignees.length > 0 && (
+                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                  {card.assignees.map((user, idx) => {
+                                    const gradients = [
+                                      'linear-gradient(135deg,#4f46e5,#7c3aed)',
+                                      'linear-gradient(135deg,#d97706,#f59e0b)',
+                                      'linear-gradient(135deg,#059669,#10b981)',
+                                      'linear-gradient(135deg,#dc2626,#f87171)',
+                                      'linear-gradient(135deg,#0284c7,#38bdf8)'
+                                    ];
+                                    const grad = gradients[idx % gradients.length];
+                                    return (
+                                      <div
+                                        key={user.id}
+                                        style={{
+                                          width: '22px', height: '22px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', color: 'white', fontWeight: 600, background: grad, border: '1.5px solid var(--bg)', marginLeft: idx > 0 ? '-6px' : '0'
+                                        }}
+                                        title={user.name}
+                                      >
+                                        {user.initials || user.name.substring(0, 2).toUpperCase()}
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+
+            {addingCardToListId === list.id ? (
+              <div style={{ marginTop: '4px', display: 'flex', flexDirection: 'column', gap: '8px', padding: '0 10px 12px' }}>
+                <textarea
+                  autoFocus
+                  value={newCardTitle}
+                  onChange={(e) => setNewCardTitle(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      handleAddCard(list.id);
+                    }
+                    if (e.key === 'Escape') {
+                      setAddingCardToListId(null);
+                      setNewCardTitle('');
+                    }
+                  }}
+                  placeholder="Enter a title for this card..."
+                  style={{ background: 'var(--surface-2)', border: '1px solid var(--accent)', borderRadius: 'var(--radius-md)', padding: '9px 11px', boxShadow: '0 0 0 3px var(--accent-dim)', resize: 'none', outline: 'none', color: 'var(--text-primary)', fontFamily: 'var(--font-body)', fontSize: '13px', minHeight: '60px', width: '100%', boxSizing: 'border-box' }}
+                />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <button onClick={() => handleAddCard(list.id)} style={{ background: 'var(--accent)', color: 'white', fontWeight: 600, borderRadius: 'var(--radius-sm)', padding: '6px 14px', fontSize: '13px', cursor: 'pointer', border: 'none' }} onMouseEnter={(e) => e.currentTarget.style.opacity = '0.85'} onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}>
+                    Add card
+                  </button>
+                  <button onClick={() => { setAddingCardToListId(null); setNewCardTitle(''); }} style={{ background: 'none', border: '1px solid var(--border)', color: 'var(--text-muted)', padding: '6px 10px', borderRadius: 'var(--radius-sm)', fontSize: '13px', cursor: 'pointer' }} onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--text-secondary)'; e.currentTarget.style.borderColor = 'var(--border-strong)'; }} onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.borderColor = 'var(--border)'; }}>
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button
+                onClick={() => { setAddingCardToListId(list.id); setNewCardTitle(''); }}
+                style={{ margin: '4px 10px 12px', background: 'none', border: '1px dashed var(--border)', borderRadius: 'var(--radius-md)', padding: '8px 10px', color: 'var(--text-muted)', fontSize: '12px', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', transition: 'all 0.2s', textAlign: 'left' }}
+                onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.color = 'var(--accent)'; e.currentTarget.style.background = 'var(--accent-dim)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.background = 'none'; }}
+              >
+                <Plus size={11} />
+                Add a card
+              </button>
+            )}
+          </div>
+        );
+      }}
+    </Draggable>
+  );
+};

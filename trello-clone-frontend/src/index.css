@@ -1,0 +1,45 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+:root {
+  --bg:             #070709;
+  --surface-0:      #0d0d10;
+  --surface-1:      #111115;
+  --surface-2:      #18181d;
+  --surface-3:      #1e1e25;
+  --glass:          rgba(255,255,255,0.028);
+  --glass-hover:    rgba(255,255,255,0.048);
+  --border:         rgba(255,255,255,0.06);
+  --border-strong:  rgba(255,255,255,0.10);
+  --text-primary:   #f0f0f4;
+  --text-secondary: #888896;
+  --text-muted:     #4a4a58;
+  --accent:         #6C63FF;
+  --accent-dim:     rgba(108,99,255,0.15);
+  --accent-glow:    rgba(108,99,255,0.25);
+  --priority-red:   #FF4D6D;
+  --priority-amber: #F59E0B;
+  --priority-green: #22D3A0;
+  --priority-blue:  #38B2F8;
+  --priority-purple:#A78BFA;
+  --font-display:   'Syne', sans-serif;
+  --font-body:      'DM Sans', sans-serif;
+  --radius-sm:      6px;
+  --radius-md:      10px;
+  --radius-lg:      14px;
+  --radius-xl:      18px;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  font-family: var(--font-body);
+  scrollbar-width: thin; 
+  scrollbar-color: var(--surface-3) transparent;
+}
+
+* { scrollbar-width: thin; scrollbar-color: var(--surface-3) transparent; }
+*::-webkit-scrollbar { width: 4px; height: 4px; }
+*::-webkit-scrollbar-thumb { background: var(--surface-3); border-radius: 10px; }
+
+/* Remove previous scrollbar styles if any */

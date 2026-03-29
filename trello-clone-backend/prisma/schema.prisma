@@ -1,0 +1,75 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String   @id @default(uuid())
+  name           String
+  email          String   @unique
+  avatarUrl      String?
+  initials       String?
+  color          String?  // hex color for avatar background
+  assignedCards  Card[]   @relation("CardAssignees") // Many-to-many
+  createdAt      DateTime @default(now())
+}
+
+model Board {
+  id              String   @id @default(uuid())
+  title           String
+  backgroundImage String?  // Can store a hex color or image URL
+  lists           List[]   // One-to-many
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model List {
+  id        String   @id @default(uuid())
+  title     String
+  order     Int      // Crucial for drag-and-drop ordering
+  boardId   String
+  board     Board    @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  cards     Card[]   // One-to-many
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([boardId]) // Index for faster queries
+}
+
+model Card {
+  id          String   @id @default(uuid())
+  title       String
+  description String?  @db.Text
+  order       Int      // Crucial for vertical drag-and-drop
+  dueDate     DateTime?
+  listId      String
+  list        List     @relation(fields: [listId], references: [id], onDelete: Cascade)
+
+  labels      Label[]  // Many-to-many
+  assignees   User[]   @relation("CardAssignees") // Many-to-many
+  checklists  ChecklistItem[] // One-to-many
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([listId])
+}
+
+model Label {
+  id    String @id @default(uuid())
+  title String?
+  color String // e.g., "bg-red-500" or hex code
+  cards Card[] // Many-to-many
+}
+
+model ChecklistItem {
+  id          String  @id @default(uuid())
+  title       String
+  isCompleted Boolean @default(false)
+  cardId      String
+  card        Card    @relation(fields: [cardId], references: [id], onDelete: Cascade)
+}
