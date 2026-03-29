@@ -625,8 +625,7 @@ function App() {
   };
 
   if (loading) return <div className="min-h-screen flex items-center justify-center" style={{ background: "var(--bg)", color: "var(--text-primary)" }}>Loading...</div>;
-  if (!board) return <div className="min-h-screen flex items-center justify-center" style={{ background: "var(--bg)", color: "var(--text-primary)" }}>No board found.</div>;
-
+  
   return (
     <div className="min-h-screen flex flex-col overflow-hidden" style={{ background: "var(--bg)", fontFamily: "var(--font-body)" }}>
       <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--surface-0)', borderBottom: '1px solid var(--border)', padding: '16px 24px', flexShrink: 0, height: '64px' }}>
