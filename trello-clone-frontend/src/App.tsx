@@ -318,7 +318,7 @@ function App() {
   const [allUsers, setAllUsers] = useState<User[]>([]);
 
   useEffect(() => {
-    fetch("http://localhost:4000/users")
+    fetch(`${import.meta.env.VITE_API_URL}/users`)
       .then(res => res.json())
       .then(data => setAllUsers(data))
       .catch(console.error);
@@ -402,11 +402,11 @@ function App() {
   useEffect(() => {
     const fetchBoard = async () => {
       try {
-        const response = await fetch("http://localhost:4000/boards");
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/boards`);
         const boards = await response.json();
 
         if (boards && boards.length > 0) {
-          const boardResponse = await fetch(`http://localhost:4000/boards/${boards[0].id}`);
+          const boardResponse = await fetch(`${import.meta.env.VITE_API_URL}/boards/${boards[0].id}`);
           const defaultBoard = await boardResponse.json();
           setBoard(defaultBoard);
         }
@@ -456,7 +456,7 @@ function App() {
       setBoard({ ...board, lists: newLists });
 
       const payload = newLists.map((list, index) => ({ id: list.id, order: index }));
-      fetch("http://localhost:4000/lists/reorder", {
+      fetch(`${import.meta.env.VITE_API_URL}/lists/reorder`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -507,7 +507,7 @@ function App() {
         );
       }
 
-      fetch("http://localhost:4000/cards/reorder", {
+      fetch(`${import.meta.env.VITE_API_URL}/cards/reorder`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -543,7 +543,7 @@ function App() {
     const maxOrder = list?.cards?.reduce((max, card) => Math.max(max, card.order), -1) ?? -1;
 
     try {
-      const response = await fetch(`http://localhost:4000/cards`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/cards`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title: newCardTitle, listId, order: maxOrder + 1 }),
@@ -569,7 +569,7 @@ function App() {
     if (!newListTitle.trim() || !board) return;
 
     try {
-      const response = await fetch(`http://localhost:4000/lists`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/lists`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title: newListTitle, boardId: board.id, order: board.lists.length }),
@@ -594,7 +594,7 @@ function App() {
     });
 
     try {
-      await fetch(`http://localhost:4000/lists/${listId}`, {
+      await fetch(`${import.meta.env.VITE_API_URL}/lists/${listId}`, {
         method: "DELETE",
       });
     } catch (error) {
@@ -614,7 +614,7 @@ function App() {
     });
 
     try {
-      await fetch(`http://localhost:4000/lists/${listId}`, {
+      await fetch(`${import.meta.env.VITE_API_URL}/lists/${listId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title: newTitle.trim() }),

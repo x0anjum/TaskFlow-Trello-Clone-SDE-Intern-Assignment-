@@ -40,7 +40,7 @@ const CardModal = ({ card, isOpen, onClose, onUpdateCard }: CardModalProps) => {
 
   useEffect(() => {
     if (isOpen) {
-      fetch("http://localhost:4000/users")
+      fetch(`${import.meta.env.VITE_API_URL}/users`)
         .then(res => res.json())
         .then(data => setAllUsers(data))
         .catch(console.error);
@@ -61,7 +61,7 @@ const CardModal = ({ card, isOpen, onClose, onUpdateCard }: CardModalProps) => {
     onUpdateCard(updatedCard);
     
     // Send the update to the Express server
-    await fetch(`http://localhost:4000/cards/${card.id}`, {
+    await fetch(`${import.meta.env.VITE_API_URL}/cards/${card.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ dueDate: dateValue })
@@ -81,10 +81,10 @@ const CardModal = ({ card, isOpen, onClose, onUpdateCard }: CardModalProps) => {
       // Remove
       newLabels = labels.filter(l => l.id !== existingLabel.id);
       setLabels(newLabels);
-      await fetch(`http://localhost:4000/cards/${card.id}/labels/${existingLabel.id}`, { method: "DELETE" });
+      await fetch(`${import.meta.env.VITE_API_URL}/cards/${card.id}/labels/${existingLabel.id}`, { method: "DELETE" });
     } else {
       // Add
-      const res = await fetch(`http://localhost:4000/cards/${card.id}/labels`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/cards/${card.id}/labels`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ color })
@@ -103,9 +103,9 @@ const CardModal = ({ card, isOpen, onClose, onUpdateCard }: CardModalProps) => {
     if (isAssigned) {
       newAssignees = assignees.filter(a => a.id !== user.id);
       setAssignees(newAssignees);
-      await fetch(`http://localhost:4000/cards/${card.id}/assignees/${user.id}`, { method: "DELETE" });
+      await fetch(`${import.meta.env.VITE_API_URL}/cards/${card.id}/assignees/${user.id}`, { method: "DELETE" });
     } else {
-      const res = await fetch(`http://localhost:4000/cards/${card.id}/assignees`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/cards/${card.id}/assignees`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId: user.id })
@@ -121,7 +121,7 @@ const CardModal = ({ card, isOpen, onClose, onUpdateCard }: CardModalProps) => {
   const handleAddChecklistItem = async () => {
     if (!newChecklistItem.trim()) return;
     try {
-      const res = await fetch(`http://localhost:4000/cards/${card.id}/checklists`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/cards/${card.id}/checklists`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title: newChecklistItem })
@@ -140,7 +140,7 @@ const CardModal = ({ card, isOpen, onClose, onUpdateCard }: CardModalProps) => {
     const newChecklists = checklists.map(i => i.id === itemId ? { ...i, isCompleted } : i);
     setChecklists(newChecklists);
     onUpdateCard({ ...card, checklists: newChecklists });
-    await fetch(`http://localhost:4000/checklists/${itemId}`, {
+    await fetch(`${import.meta.env.VITE_API_URL}/checklists/${itemId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ isCompleted })
@@ -151,7 +151,7 @@ const CardModal = ({ card, isOpen, onClose, onUpdateCard }: CardModalProps) => {
     const newChecklists = checklists.filter(i => i.id !== itemId);
     setChecklists(newChecklists);
     onUpdateCard({ ...card, checklists: newChecklists });
-    await fetch(`http://localhost:4000/checklists/${itemId}`, { method: "DELETE" });
+    await fetch(`${import.meta.env.VITE_API_URL}/checklists/${itemId}`, { method: "DELETE" });
   };
 
   const completedCount = checklists.filter(i => i.isCompleted).length;
