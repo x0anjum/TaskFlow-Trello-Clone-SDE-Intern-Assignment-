@@ -646,7 +646,7 @@ function App() {
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "var(--surface-1)", borderBottom: "1px solid var(--border)", padding: "12px 24px", flexShrink: 0, height: "60px" }}>
         <div>
           <p style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-secondary)', fontWeight: 600, marginBottom: '2px' }}>Board Details</p>
-          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.02em', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>{board.title}</h2>
+          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.02em', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>{board?.title}</h2>
         </div>
         <div className="flex items-center gap-4">
           <div className="relative">
@@ -750,7 +750,7 @@ function App() {
 <main 
         style={{ 
           flex: 1, display: 'flex', alignItems: 'flex-start', overflowX: 'auto', height: '100%', padding: '24px', background: 'transparent',
-          ...(board.backgroundImage ? { backgroundImage: `url(${board.backgroundImage})`, backgroundSize: 'cover' } : {})
+          ...(board?.backgroundImage ? { backgroundImage: `url(${board.backgroundImage})`, backgroundSize: 'cover' } : {})
         }}
       >
         <DragDropContext onDragEnd={onDragEnd}>
