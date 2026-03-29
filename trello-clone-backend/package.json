@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "tsx src/index.ts",
+    "build": "npm install && npx prisma generate",
     "dev": "tsx src/index.ts",
     "seed": "tsx src/seed.ts"
   },
